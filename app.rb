@@ -2,6 +2,17 @@ require 'rubygems'
 require 'sinatra'
 require 'http'
 
+before do
+
+  # Parse JSON in body
+  if request.body.size > 0
+    request.body.rewind
+    @params = ActiveSupport::JSON.decode(request.body.read)
+  end
+
+end
+
+
 helpers do
   def valid_token?
     return params['token'] === ENV['NATIONBUILDER_WEBHOOK_TOKEN']
