@@ -36,7 +36,7 @@ helpers do
     id
     email email1 email2 email3 email4
     username
-    first_name last_name
+    first_name last_name full_name
     primary_address
     tags
     bio occupation profile_content
@@ -49,7 +49,7 @@ helpers do
   end
 
   def person_filtered
-    params['payload']['person'].select do |key, value|
+    person = params['payload']['person'].select do |key, value|
       allowed_keys.include? key
     end
   end
@@ -63,10 +63,11 @@ post '/people/created' do
   check_token!
 
   person = person_filtered
+  person_without_id = p.tap { |p| p.delete('id') }
   logger.info person.inspect
 
   index = algolia_index 'people'
-  res = index.add_object(person, person['id'])
+  res = index.add_object(person_without_id, person['id'])
   logger.info "ObjectID=" + res["objectID"]
 
   'OK'
@@ -77,6 +78,7 @@ post '/people/changed' do
 
   person = person_filtered
   person['objectID'] = person['id']
+  person.delete('id')
   logger.info person.inspect
 
   index = algolia_index 'people'
@@ -101,6 +103,8 @@ post '/people/deleted' do
 
   person = person_filtered
   logger.info person.inspect
+
+  index = algolia_index 'people'
   index.delete_object(person['id'])
 
   'OK'
