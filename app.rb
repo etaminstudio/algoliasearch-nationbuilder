@@ -43,7 +43,7 @@ post '/people/created' do
   logger.info person.inspect
 
   index = algolia_index 'people'
-  res = index.add_object(people)
+  res = index.add_object(person)
   logger.info "ObjectID=" + res["objectID"]
 
   'OK'
