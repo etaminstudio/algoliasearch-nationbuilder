@@ -33,18 +33,25 @@ helpers do
 
   def allowed_keys
     %w{
-    email
+    id
+    email email1 email2 email3 email4
     username
     first_name last_name
     primary_address
     tags
-    bio
+    bio occupation profile_content
     twitter_login
-    facebook_username
+    facebook_username facebook_profile_url
     linkedin_id
     website
     profile_image_url_ssl
     }
+  end
+
+  def person_filtered
+    params['payload']['person'].select do |key, value|
+      allowed_keys.include? key
+    end
   end
 end
 
@@ -55,13 +62,11 @@ end
 post '/people/created' do
   check_token!
 
-  person = params['payload']['person'].select do |key, value|
-    allowed_keys.include? key
-  end
+  person = person_filtered
   logger.info person.inspect
 
   index = algolia_index 'people'
-  res = index.add_object(person)
+  res = index.add_object(person, person['id'])
   logger.info "ObjectID=" + res["objectID"]
 
   'OK'
@@ -70,29 +75,33 @@ end
 post '/people/changed' do
   check_token!
 
-  person = params['payload']['person']
-
+  person = person_filtered
+  person['objectID'] = person['id']
   logger.info person.inspect
 
-  'People changed'
+  index = algolia_index 'people'
+  index.save_object(person)
+
+  'OK'
 end
 
 post '/people/merged' do
   check_token!
 
-  person = params['payload']['person']
+  logger.info params.inspect
 
+  person = person_filtered
   logger.info person.inspect
 
-  'People merged'
+  'OK'
 end
 
 post '/people/deleted' do
   check_token!
 
-  person = params['payload']['person']
-
+  person = person_filtered
   logger.info person.inspect
+  index.delete_object(person['id'])
 
-  'People deleted'
+  'OK'
 end
