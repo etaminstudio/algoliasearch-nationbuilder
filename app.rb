@@ -1,6 +1,9 @@
 require 'rubygems'
 require 'sinatra'
-require 'http'
+require 'algoliasearch'
+
+Algolia.init :application_id => ENV['ALGOLIA_APP_ID'],
+             :api_key        => ENV['ALGOLIA_ADMIN_KEY']
 
 before do
 
@@ -23,6 +26,10 @@ helpers do
       halt 403, 'Bad token'
     end
   end
+
+  def algolia_index(name)
+    Algolia::Index.new(name)
+  end
 end
 
 get '/' do
@@ -33,10 +40,13 @@ post '/people/created' do
   check_token!
 
   person = params['payload']['person']
-  
-  puts person.inspect
+  logger.info person.inspect
 
-  'People created'
+  index = algolia_index 'people'
+  res = index.add_object(people)
+  logger.info "ObjectID=" + res["objectID"]
+
+  'OK'
 end
 
 post '/people/changed' do
@@ -44,7 +54,7 @@ post '/people/changed' do
 
   person = params['payload']['person']
 
-  puts person.inspect
+  logger.info person.inspect
 
   'People changed'
 end
@@ -54,7 +64,7 @@ post '/people/merged' do
 
   person = params['payload']['person']
 
-  puts person.inspect
+  logger.info person.inspect
 
   'People merged'
 end
@@ -64,7 +74,7 @@ post '/people/deleted' do
 
   person = params['payload']['person']
 
-  puts person.inspect
+  logger.info person.inspect
 
   'People deleted'
 end
