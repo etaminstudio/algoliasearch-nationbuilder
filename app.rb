@@ -7,7 +7,7 @@ before do
   # Parse JSON in body
   if request.body.size > 0
     request.body.rewind
-    @params = ActiveSupport::JSON.decode(request.body.read)
+    @params = JSON.parse request.body.read
   end
 
 end
