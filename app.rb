@@ -30,6 +30,22 @@ helpers do
   def algolia_index(name)
     Algolia::Index.new(name)
   end
+
+  def allowed_keys
+    %w{
+    email
+    username
+    first_name last_name
+    primary_address
+    tags
+    bio
+    twitter_login
+    facebook_username
+    linkedin_id
+    website
+    profile_image_url_ssl
+    }
+  end
 end
 
 get '/' do
@@ -39,7 +55,9 @@ end
 post '/people/created' do
   check_token!
 
-  person = params['payload']['person']
+  person = params['payload']['person'].select do |key, value|
+    allowed_keys.include? key
+  end
   logger.info person.inspect
 
   index = algolia_index 'people'
