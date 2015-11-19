@@ -10,8 +10,6 @@ Dotenv.load
 Algolia.init :application_id => ENV['ALGOLIA_APP_ID'],
              :api_key        => ENV['ALGOLIA_ADMIN_KEY']
 
-@config = YAML.load_file(File.join(settings.root, 'config.yml'))
-
 before do
 
   # Parse JSON in body
@@ -24,6 +22,10 @@ end
 
 
 helpers do
+  def config
+    YAML.load_file(File.join(settings.root, 'config.yml'))
+  end
+
   def valid_token?
     return params['token'] === ENV['NATIONBUILDER_WEBHOOK_TOKEN']
   end
@@ -40,7 +42,7 @@ helpers do
 
   def person_filtered
     params['payload']['person'].select do |key, value|
-      @config['allowed_keys'].include? key
+      config['allowed_keys'].include? key
     end
   end
 end
