@@ -60,7 +60,6 @@ post '/people/created' do
 
   index = algolia_index
   res = index.add_object(person_without_id, person['id'])
-  logger.info "ObjectID=" + res["objectID"]
 
   'OK'
 end
@@ -74,7 +73,7 @@ post '/people/changed' do
   # Delete if banned
   unless person['banned_at'].nil?
     puts '> delete (banned)'
-    index.delete_object(person['objectID'])
+    index.delete_object(person['id'])
     halt 200
   end
 
@@ -125,6 +124,10 @@ post '/people/deleted' do
 
   person = person_filtered
   logger.info person.inspect
+
+  if person['id'].nil? or person['id'].empty?
+    halt
+  end
 
   index = algolia_index
   index.delete_object(person['id'])
