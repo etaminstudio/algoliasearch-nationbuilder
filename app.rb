@@ -69,10 +69,6 @@ post '/people/changed' do
   check_token!
 
   person = person_filtered
-  person['objectID'] = person['id']
-  person.delete('id')
-  logger.info person.inspect
-
   index = algolia_index
 
   # Delete if banned
@@ -81,6 +77,32 @@ post '/people/changed' do
     index.delete_object(person['objectID'])
     halt 200
   end
+
+  # Emails as array
+  person['emails'] = []
+  (1..5).each do |i|
+    person['emails'] << person["email#{i}"]
+    person.delete("email#{i}")
+  end
+  person['emails'] = person['emails'].compact.uniq
+
+  # Geoloc
+  unless person['primary_address'].nil? or person['primary_address']['lat'].nil? or person['primary_address']['lng'].nil?
+    person['_geoloc'] = {
+      lat: person['primary_address']['lat'],
+      lng: person['primary_address']['lng']
+    }
+  end
+
+  # Tags
+  person['_tags'] = person['tags']
+  person.delete('tags')
+
+  # Set id
+  person['objectID'] = person['id']
+  person.delete('id')
+
+  logger.info person.inspect
 
   index.save_object(person)
 
