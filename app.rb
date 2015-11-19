@@ -1,9 +1,15 @@
 require 'rubygems'
 require 'sinatra'
 require 'algoliasearch'
+require 'dotenv'
+require 'yaml'
+
+Dotenv.load
 
 Algolia.init :application_id => ENV['ALGOLIA_APP_ID'],
              :api_key        => ENV['ALGOLIA_ADMIN_KEY']
+
+@config = YAML.load_file('config.yml')
 
 before do
 
@@ -27,36 +33,19 @@ helpers do
     end
   end
 
-  def algolia_index(name)
-    Algolia::Index.new(name)
-  end
-
-  def allowed_keys
-    %w{
-    id
-    email email1 email2 email3 email4
-    username
-    first_name last_name full_name
-    primary_address
-    tags
-    bio occupation profile_content
-    twitter_login
-    facebook_username facebook_profile_url
-    linkedin_id
-    website
-    profile_image_url_ssl
-    }
+  def algolia_index
+    Algolia::Index.new ENV['ALGOLIA_INDEX']
   end
 
   def person_filtered
     person = params['payload']['person'].select do |key, value|
-      allowed_keys.include? key
+      @config['allowed_keys'].include? key
     end
   end
 end
 
 get '/' do
-  "Hello from Sinatra on Heroku!"
+  'Hello World'
 end
 
 post '/people/created' do
@@ -66,7 +55,7 @@ post '/people/created' do
   person_without_id = p.tap { |p| p.delete('id') }
   logger.info person.inspect
 
-  index = algolia_index 'people'
+  index = algolia_index
   res = index.add_object(person_without_id, person['id'])
   logger.info "ObjectID=" + res["objectID"]
 
@@ -81,7 +70,7 @@ post '/people/changed' do
   person.delete('id')
   logger.info person.inspect
 
-  index = algolia_index 'people'
+  index = algolia_index
   index.save_object(person)
 
   'OK'
@@ -104,7 +93,7 @@ post '/people/deleted' do
   person = person_filtered
   logger.info person.inspect
 
-  index = algolia_index 'people'
+  index = algolia_index
   index.delete_object(person['id'])
 
   'OK'

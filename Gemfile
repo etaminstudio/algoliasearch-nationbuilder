@@ -3,5 +3,6 @@ source 'https://rubygems.org'
 ruby '2.1.7'
 
 gem 'sinatra'
-# gem 'http'
 gem 'algoliasearch'
+gem 'dotenv'
+gem 'rake'
