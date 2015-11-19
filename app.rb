@@ -74,6 +74,14 @@ post '/people/changed' do
   logger.info person.inspect
 
   index = algolia_index
+
+  # Delete if banned
+  unless person['banned_at'].nil?
+    puts '> delete (banned)'
+    index.delete_object(person['objectID'])
+    halt 200
+  end
+
   index.save_object(person)
 
   'OK'

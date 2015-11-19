@@ -21,3 +21,4 @@ allowed_keys:
   - linkedin_id
   - website
   - profile_image_url_ssl
+  - banned_at
