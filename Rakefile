@@ -43,8 +43,6 @@ task :import_csv, [:file] => [:init_config, :init_algolia] do |t, args|
       hash
     end
 
-    puts batch.first.inspect
-
     res = @index.save_objects(batch)
 
     puts res.inspect
