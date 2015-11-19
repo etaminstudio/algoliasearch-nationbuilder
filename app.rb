@@ -3,6 +3,7 @@ require 'sinatra'
 require 'algoliasearch'
 require 'dotenv'
 require 'yaml'
+require 'nationbuilder'
 
 Dotenv.load
 
