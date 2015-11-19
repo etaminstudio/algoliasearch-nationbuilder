@@ -10,8 +10,7 @@ Dotenv.load
 Algolia.init :application_id => ENV['ALGOLIA_APP_ID'],
              :api_key        => ENV['ALGOLIA_ADMIN_KEY']
 
-@config = YAML.load_file('config.yml')
-puts @config.inspect
+@config = YAML.load_file(File.expand_path('./config.yml', __FILE__))
 
 before do
 
