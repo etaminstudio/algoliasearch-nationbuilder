@@ -11,6 +11,7 @@ Algolia.init :application_id => ENV['ALGOLIA_APP_ID'],
              :api_key        => ENV['ALGOLIA_ADMIN_KEY']
 
 @config = YAML.load_file('config.yml')
+puts @config.inspect
 
 before do
 
@@ -39,7 +40,7 @@ helpers do
   end
 
   def person_filtered
-    person = params['payload']['person'].select do |key, value|
+    params['payload']['person'].select do |key, value|
       @config['allowed_keys'].include? key
     end
   end
