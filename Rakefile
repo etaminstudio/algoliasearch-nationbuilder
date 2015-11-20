@@ -120,8 +120,15 @@ task :import_csv, [:file] => [:init_config, :init_algolia] do |t, args|
       hash.select! do |key, value|
         @config['allowed_keys'].include? key
       end
+
+      # Tags
+      person['_tags'] = person['tag_list']
+      person.delete('tag_list')
+
+      # Set id
       hash['objectID'] = hash['nationbuilder_id']
       hash.delete('nationbuilder_id')
+
       hash
     end
 
