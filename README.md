@@ -24,3 +24,10 @@ Start the server locally
 # Deployment
 
 This project can be easily deployed to Heroku, just set the variables from `.env` as Config Variables.
+
+Then, configure your NationBuilder webhooks so they point to the following paths:
+
+- Person created: `/people/created`
+- Person changed: `/people/changed`
+- Person merged: `/people/merged`
+- Person deleted: `/people/deleted`
