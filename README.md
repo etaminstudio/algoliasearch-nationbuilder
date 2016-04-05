@@ -38,6 +38,6 @@ To import all your People to your Algolia index using NationBuilder API, run:
 
     rake import_people
 
-You can also import you People data from a CSV file:
+You can also import your People data from a CSV file:
 
     rake import_csv[your_file.csv]
