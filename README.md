@@ -31,3 +31,13 @@ Then, configure your NationBuilder webhooks so they point to the following paths
 - Person changed: `/people/changed`
 - Person merged: `/people/merged`
 - Person deleted: `/people/deleted`
+
+# Initial import
+
+To import all your People to your Algolia index using NationBuilder API, run:
+
+    rake import_people
+
+You can also import you People data from a CSV file:
+
+    rake import_csv[your_file.csv]
