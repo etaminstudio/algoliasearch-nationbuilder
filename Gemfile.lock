@@ -4,7 +4,7 @@ GEM
     algoliasearch (1.6.1)
       httpclient (~> 2.4)
       json (>= 1.5.1)
-    dotenv (2.0.2)
+    dotenv (2.2.1)
     foreman (0.84.0)
       thor (~> 0.19.1)
     httpclient (2.7.0.1)
